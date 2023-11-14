@@ -14,12 +14,10 @@ class ClienteRepository
     {
         try {
             DB::beginTransaction();
-
             $cliente = new Cliente();
             $cliente->nome = $data["nome"];
             $cliente->email = $data["email"];
             $cliente->save();
-
             DB::commit();
             return $cliente;
         } catch (Exception $e) {
@@ -37,17 +35,10 @@ class ClienteRepository
     {
         try {
             DB::beginTransaction();
-
-            $cliente = Cliente::find($id);
-
-            if (!$cliente) {
-                return null;
-            }
-
+            $cliente = Cliente::findOrFail($id);
             $cliente->nome = $data["nome"];
             $cliente->email = $data["email"];
             $cliente->save();
-
             DB::commit();
             return $cliente;
         } catch (Exception $e) {
@@ -61,12 +52,10 @@ class ClienteRepository
     {
         try {
             DB::beginTransaction();
-            $cliente = Cliente::find($id);
+            $cliente = Cliente::findOrFail($id);
+            $cliente->delete();
+            DB::commit();
 
-            if ($cliente) {
-                $cliente->delete();
-                DB::commit();
-            }
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

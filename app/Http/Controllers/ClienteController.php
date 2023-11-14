@@ -14,6 +14,7 @@ class ClienteController extends Controller
 
     public function __construct(ClienteService $clienteService)
     {
+        $this->middleware('auth:sanctum');
         $this->clienteService = $clienteService;
     }
 
