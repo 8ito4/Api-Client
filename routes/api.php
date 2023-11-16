@@ -16,3 +16,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/clientes/{id}', [ClienteController::class, 'editarCliente']);
     Route::delete('/clientes/{id}', [ClienteController::class, 'excluirCliente']);
 });
+

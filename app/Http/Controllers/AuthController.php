@@ -6,51 +6,36 @@ use App\Http\Requests\AuthRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
     public function login(AuthRequest $request): JsonResponse
-    {
-        $credenciais = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credenciais)) {
-            $usuario = Auth::user();
-            $token = $usuario->createToken('app-token')->plainTextToken;
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
+        $token = $user->createToken('app-token')->plainTextToken;
 
-            return $this->respostaSucesso(['token' => $token, 'usuario' => $usuario]);
-        }
-
-        return $this->respostaErro('Credenciais inválidas', 401);
+        return response()->json(['token' => $token, 'user' => $user]);
     }
+
+    return response()->json(['message' => 'Invalid credentials'], 401);
+}
 
     public function logout(): JsonResponse
     {
         Auth::user()->tokens()->delete();
 
-        return $this->respostaSucesso(['mensagem' => 'Logout realizado com sucesso']);
+        return response()->json(['message' => 'Logout realizado com sucesso']);
     }
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        $usuario = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
+        $user = User::create($request->validated());
 
-        $token = $usuario->createToken('app-token')->plainTextToken;
-
-        return $this->respostaSucesso(['token' => $token, 'usuario' => $usuario]);
-    }
-
-    protected function respostaSucesso($dados): JsonResponse
-    {
-        return response()->json($dados);
-    }
-
-    protected function respostaErro($mensagem, $statusCode): JsonResponse
-    {
-        return response()->json(['mensagem' => $mensagem], $statusCode);
+        return response()->json(['user' => $user]);
     }
 }
